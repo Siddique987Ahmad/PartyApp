@@ -9,6 +9,7 @@ import RegisterScreen from './Screens/registerScreen';
 import FrontPage from './Screens/FrontPage';
 import EventPage from './Screens/EventPage';
 import HomePage from './Screens/HomePage';
+import UpdateEvent from './Screens/UpdateEvent';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -21,6 +22,7 @@ const App = () => {
         <Stack.Screen name="Front" component={FrontPage}/>
         <Stack.Screen name="CreateEvent" component={EventPage} />
         <Stack.Screen name="Home" component={HomePage} />
+        <Stack.Screen name="UpdateEvent" component={UpdateEvent} />
       </Stack.Navigator>
     </NavigationContainer>
   );

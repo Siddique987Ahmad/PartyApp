@@ -1,101 +1,102 @@
-// /* eslint-disable no-unused-vars */
-// import React, {useState} from 'react';
+// import React, { useState, useEffect } from 'react';
 // import {
 //   View,
 //   Text,
 //   TextInput,
 //   FlatList,
+//   Image,
 //   TouchableOpacity,
 //   StyleSheet,
-//   Image,
 // } from 'react-native';
-// import Icon from 'react-native-vector-icons/FontAwesome';
-// //import {useNavigation} from '@react-navigation/native';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
 
-// const FrontPage = ({navigation}) => {
-
+// const FrontPage = ({ navigation, route }) => {
 //   const [searchQuery, setSearchQuery] = useState('');
-//   const [partyType, setPartyType] = useState('All');
+//   const [partyType, setPartyType] = useState(null);
 //   const [location, setLocation] = useState(null);
-
-//   // Dummy data for event previews
-//   const events = [
+//   const [distance, setDistance] = useState(null);
+//   const [events, setEvents] = useState([
 //     {
 //       id: '1',
-//       picture: 'https://via.placeholder.com/150',
-//       title: 'Pool Party',
-//       startTime: '8:00 PM',
-//       endTime: '2:00 AM',
+//       title: 'Spring Break Bash',
+//       image: 'https://example.com/party.jpg',
+//       startTime: '2025-03-23 21:00',
+//       endTime: '2025-03-24 02:00',
 //       host: 'John Doe',
 //       city: 'New York',
 //       guests: 50,
-//       avgAge: 25,
-//       maleFemaleRatio: '60/40',
+//       avgAge: 24,
+//       genderRatio: '60/40',
 //     },
-//     {
-//       id: '2',
-//       picture: 'https://via.placeholder.com/150',
-//       title: 'Rooftop Bash',
-//       startTime: '9:00 PM',
-//       endTime: '3:00 AM',
-//       host: 'Jane Smith',
-//       city: 'Los Angeles',
-//       guests: 30,
-//       avgAge: 28,
-//       maleFemaleRatio: '50/50',
-//     },
-//   ];
+//   ]);
 
-//   const handleSearch = () => {
-//     // Filter events based on searchQuery, partyType, and location
-//     console.log('Searching for:', searchQuery, partyType, location);
-//   };
+//   // Listen for new events from EventPage
+//   useEffect(() => {
+//     if (route.params?.newEvent) {
+//       setEvents(prevEvents => [...prevEvents, route.params.newEvent]);
+//     }
+//   }, [route.params?.newEvent]);
 
-//   const handleCreateEvent = () => {
-//     navigation.navigate('CreateEvent');
-//   };
+//   const renderEvent = ({ item }) => (
+//     <View style={styles.eventCard}>
+//       {item.image && <Image source={{ uri: item.image }} style={styles.eventImage} />}
+//       <View style={styles.eventDetails}>
+//         <Text style={styles.eventTitle}>{item.title}</Text>
+//         <Text>{`${item.startTime} - ${item.endTime}`}</Text>
+//         <Text>{`Host: ${item.host}`}</Text>
+//         <Text>{`Location: ${item.city}`}</Text>
+//         <Text>{`Guests: ${item.guests}`}</Text>
+//         <Text>{`Avg Age: ${item.avgAge}`}</Text>
+//         <Text>{`M/F Ratio: ${item.genderRatio}`}</Text>
+//       </View>
+//     </View>
+//   );
 
 //   return (
 //     <View style={styles.container}>
-//       {/* Search Bar and Icons */}
+//       {/* Search and Filter Section */}
 //       <View style={styles.searchContainer}>
 //         <TextInput
-//           style={styles.searchBar}
+//           style={styles.searchInput}
 //           placeholder="Search events..."
 //           value={searchQuery}
 //           onChangeText={setSearchQuery}
 //         />
-//         <TouchableOpacity onPress={() => setPartyType('Pre-parties')}>
-//           <Icon name="glass" size={24} color="#000" />
+//         <TouchableOpacity style={styles.iconButton} onPress={() => {/* Open party type modal */}}>
+//           <Icon name="celebration" size={30} color="#000" />
 //         </TouchableOpacity>
-//         <TouchableOpacity onPress={() => navigation.navigate('Map')}>
-//           <Icon name="map-marker" size={24} color="#000" />
+//         <TouchableOpacity style={styles.iconButton} onPress={() => {/* Open map modal */}}>
+//           <Icon name="map" size={30} color="#000" />
 //         </TouchableOpacity>
 //       </View>
 
-//       {/* Event Previews */}
+//       {partyType && (
+//         <View style={styles.filterDisplay}>
+//           <Text>Party Type: {partyType}</Text>
+//         </View>
+//       )}
+
+//       {location && (
+//         <View style={styles.filterDisplay}>
+//           <Text>{`Location: ${location} (${distance}km)`}</Text>
+//         </View>
+//       )}
+
 //       <FlatList
-//         data={events}
-//         keyExtractor={item => item.id}
-//         renderItem={({item}) => (
-//           <View style={styles.eventPreview}>
-//             <Image source={{uri: item.picture}} style={styles.eventImage} />
-//             <Text style={styles.eventTitle}>{item.title}</Text>
-//             <Text>{`${item.startTime} - ${item.endTime}`}</Text>
-//             <Text>Host: {item.host}</Text>
-//             <Text>City: {item.city}</Text>
-//             <Text>Guests: {item.guests}</Text>
-//             <Text>Avg Age: {item.avgAge}</Text>
-//             <Text>Male/Female: {item.maleFemaleRatio}</Text>
-//           </View>
+//         data={events.filter(event =>
+//           (!searchQuery || event.title.toLowerCase().includes(searchQuery.toLowerCase())) &&
+//           (!partyType || event.type === partyType) &&
+//           (!location || event.city === location)
 //         )}
+//         renderItem={renderEvent}
+//         keyExtractor={item => item.id}
+//         style={styles.eventsList}
 //       />
 
-//       {/* Create Event Button */}
 //       <TouchableOpacity
-//         style={styles.createEventButton}
-//         onPress={handleCreateEvent}>
-//         <Text style={styles.createEventButtonText}>Create Event</Text>
+//         style={styles.createButton}
+//         onPress={() => navigation.navigate('CreateEvent')}>
+//         <Text style={styles.createButtonText}>Create Event</Text>
 //       </TouchableOpacity>
 //     </View>
 //   );
@@ -104,94 +105,338 @@
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,
-//     padding: 16,
+//     backgroundColor: '#fff',
 //   },
 //   searchContainer: {
 //     flexDirection: 'row',
+//     padding: 10,
 //     alignItems: 'center',
-//     marginBottom: 16,
 //   },
-//   searchBar: {
+//   searchInput: {
 //     flex: 1,
-//     borderColor: '#ccc',
 //     borderWidth: 1,
-//     borderRadius: 8,
+//     borderColor: '#ccc',
+//     borderRadius: 5,
 //     padding: 8,
-//     marginRight: 8,
+//     marginRight: 10,
 //   },
-//   eventPreview: {
-//     marginBottom: 16,
-//     padding: 16,
-//     borderColor: '#ccc',
-//     borderWidth: 1,
-//     borderRadius: 8,
+//   iconButton: {
+//     padding: 5,
+//   },
+//   filterDisplay: {
+//     padding: 10,
+//     backgroundColor: '#f0f0f0',
+//   },
+//   eventsList: {
+//     flex: 1,
+//   },
+//   eventCard: {
+//     flexDirection: 'row',
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#eee',
 //   },
 //   eventImage: {
-//     width: '100%',
-//     height: 150,
-//     borderRadius: 8,
-//     marginBottom: 8,
+//     width: 100,
+//     height: 100,
+//     borderRadius: 5,
+//     marginRight: 10,
+//   },
+//   eventDetails: {
+//     flex: 1,
 //   },
 //   eventTitle: {
-//     fontSize: 18,
+//     fontSize: 16,
 //     fontWeight: 'bold',
-//     marginBottom: 8,
+//     marginBottom: 5,
 //   },
-//   createEventButton: {
-//     position: 'absolute',
-//     bottom: 16,
-//     left: 16,
-//     right: 16,
-//     backgroundColor: '#007BFF',
-//     padding: 16,
-//     borderRadius: 8,
+//   createButton: {
+//     backgroundColor: '#007AFF',
+//     padding: 15,
+//     borderRadius: 5,
 //     alignItems: 'center',
+//     margin: 10,
+//     position: 'absolute',
+//     bottom: 10,
+//     left: 10,
+//     right: 10,
 //   },
-//   createEventButtonText: {
+//   createButtonText: {
 //     color: '#fff',
-//     fontSize: 18,
+//     fontSize: 16,
 //     fontWeight: 'bold',
 //   },
 // });
 
 // export default FrontPage;
 
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import EventList from './EventList';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import axios from 'axios';
 
-const FrontPage = ({navigation}) => {
+const FrontPage = ({ navigation, route }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [partyType, setPartyType] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [distance, setDistance] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch events from the backend
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      console.log('Fetching events from: http://192.168.222.83:4001/api/event/getallevents');
+      const response = await axios.get('http://192.168.222.83:4001/api/event/getallevents'); // Adjust endpoint
+      console.log('Response data:', response.data);
+      // Ensure response.data is an array
+    // let eventArray = Array.isArray(response.data) ? response.data : response.data.events || [];
+    // if (!Array.isArray(eventArray)) {
+    //   console.warn('Response data is not an array:', eventArray);
+    //   eventArray = []; // Fallback to empty array
+    // }
+    let eventArray = response.data.allEvents || response.data || [];
+      if (!Array.isArray(eventArray)) {
+        console.warn('Response data is not an array:', eventArray);
+        eventArray = [];
+      }
+    const fetchedEvents = eventArray.map(event => ({
+      id: event._id,
+      title: event.title,
+      image: event.images?.[0] || null,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      host: event.host,
+      city: event.city,
+      guests: event.guests,
+      avgAge: event.averageAge,
+      genderRatio: `${event.genderRatio?.male || 0}/${event.genderRatio?.female || 0}`,
+    }));
+    setEvents(fetchedEvents);
+  } catch (error) {
+    console.error('❌ Fetch Events Error:', error);
+    if (error.response) {
+      console.log('Server responded with:', error.response.data);
+    } else if (error.request) {
+      console.log('No response received:', error.request);
+    } else {
+      console.log('Error setting up request:', error.message);
+    }
+    setEvents([]); // Fallback to empty array on error
+  } finally {
+    setLoading(false);
+  }
+  };
+  const deleteEvent = async (eventId) => {
+    try {
+      const url = `http://192.168.222.83:4001/api/event/deleteevent/${eventId}`; // Adjust for your setup
+      console.log('Deleting event at:', url);
+      const response = await axios.delete(url);
+
+      if (response.status === 200) {
+        // Remove the event from the state
+        setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
+        Alert.alert('Success', 'Event deleted successfully');
+      }
+    } catch (error) {
+      console.error('❌ Delete Event Error:', error);
+      Alert.alert('Error', error.response?.data?.message || 'Failed to delete event');
+    }
+  };
+
+  const handleDelete = (eventId) => {
+    Alert.alert(
+      'Delete Event',
+      'Are you sure you want to delete this event?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', onPress: () => deleteEvent(eventId), style: 'destructive' },
+      ],
+      { cancelable: true }
+    );
+  };
+  // Fetch events on mount and when refresh is triggered
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    if (route.params?.refresh) {
+      fetchEvents();
+      navigation.setParams({ refresh: false });
+    }
+  }, [route.params?.refresh, navigation]);
+
+  const renderEvent = ({ item }) => (
+    <View style={styles.eventCard}>
+      {item.image && <Image source={{ uri: item.image }} style={styles.eventImage} />}
+      <View style={styles.eventDetails}>
+        <Text style={styles.eventTitle}>{item.title}</Text>
+        <Text>{`${item.startTime} - ${item.endTime}`}</Text>
+        <Text>{`Host: ${item.host}`}</Text>
+        <Text>{`Location: ${item.city}`}</Text>
+        <Text>{`Guests: ${item.guests}`}</Text>
+        <Text>{`Avg Age: ${item.avgAge}`}</Text>
+        <Text>{`M/F Ratio: ${item.genderRatio}`}</Text>
+      </View>
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.navigate('UpdateEvent', { event: item })}
+        >
+          <Icon name="edit" size={24} color="#007AFF" />
+        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(item.id)}
+      >
+        <Icon name="delete" size={24} color="#FF0000" />
+      </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <Text>FrontPage</Text>
+      {/* Search and Filter Section */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search events..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <TouchableOpacity style={styles.iconButton} onPress={() => {/* Open party type modal */}}>
+          <Icon name="celebration" size={30} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton} onPress={() => {/* Open map modal */}}>
+          <Icon name="map" size={30} color="#000" />
+        </TouchableOpacity>
+      </View>
+
+      {partyType && (
+        <View style={styles.filterDisplay}>
+          <Text>Party Type: {partyType}</Text>
+        </View>
+      )}
+
+      {location && (
+        <View style={styles.filterDisplay}>
+          <Text>{`Location: ${location} (${distance}km)`}</Text>
+        </View>
+      )}
+
+      {loading ? (
+        <Text style={styles.loadingText}>Loading events...</Text>
+      ) : (
+        <FlatList
+          data={events.filter(event =>
+            (!searchQuery || event.title.toLowerCase().includes(searchQuery.toLowerCase())) &&
+            (!partyType || event.type === partyType) &&
+            (!location || event.city === location)
+          )}
+          renderItem={renderEvent}
+          keyExtractor={item => item.id}
+          style={styles.eventsList}
+        />
+      )}
+
       <TouchableOpacity
-        style={styles.createEventButton}
+        style={styles.createButton}
         onPress={() => navigation.navigate('CreateEvent')}>
-        <Text style={styles.createEventButtonText}>Create Event</Text>
+        <Text style={styles.createButtonText}>Create Event</Text>
       </TouchableOpacity>
-      <EventList/>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    backgroundColor: '#fff',
   },
-  createEventButton: {
-    position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
-    backgroundColor: '#007BFF',
-    padding: 16,
-    borderRadius: 8,
+  searchContainer: {
+    flexDirection: 'row',
+    padding: 10,
     alignItems: 'center',
   },
-  createEventButtonText: {
-    color: '#fff',
-    fontSize: 18,
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 8,
+    marginRight: 10,
+  },
+  iconButton: {
+    padding: 5,
+  },
+  filterDisplay: {
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+  },
+  eventsList: {
+    flex: 1,
+  },
+  eventCard: {
+    flexDirection: 'row',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  eventImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  eventDetails: {
+    flex: 1,
+  },
+  eventTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 5,
+  },actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  editButton: {
+    padding: 5,
+    marginRight: 10,
+  },
+  createButton: {
+    backgroundColor: '#007AFF',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    margin: 10,
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    right: 10,
+  },
+  createButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    padding: 5,
+  },
+  loadingText: {
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

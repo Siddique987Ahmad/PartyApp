@@ -70,7 +70,7 @@ const EventPage = ({navigation}) => {
       console.log('🚀 FormData Debugging:', JSON.stringify(formData, null, 2));
 
       const response = await axios.post(
-        'http://192.168.222.239:4001/api/event/createevent',
+        'http://192.168.222.83:4001/api/event/createevent',
         formData,
         {
           headers: {
@@ -82,7 +82,19 @@ const EventPage = ({navigation}) => {
       );
       if (response.status === 200) {
         Alert.alert('Success', 'Event created successfully');
-        navigation.navigate('Home');
+        // const newEvent = {
+        //   id: response.data.eventId || Date.now().toString(), // Use server-provided ID if available
+        //   title,
+        //   image: images[0] || null, // Use first image if available
+        //   startTime: formatDate(startTime),
+        //   endTime: formatDate(endTime),
+        //   host: userId,
+        //   city,
+        //   guests: parseInt(guests) || 0,
+        //   avgAge: parseInt(averageAge) || 0,
+        //   genderRatio: `${male}/${female}`,
+        // };
+        navigation.navigate('Front',{refresh:true});
       }
     } catch (error) {
         console.error('❌ API Error:', error);
